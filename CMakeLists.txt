@@ -17,8 +17,8 @@ add_definitions(${GTK3_CFLAGS_OTHER})
 
 add_executable(MoniAuxServer
         include/gui.h
-        gui.c
-        main.c
+        src/gui.c
+        src/main.c
 )
 
 # Vincular GTK

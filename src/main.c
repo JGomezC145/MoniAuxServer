@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include "include/gui.h"
+#include "../include/gui.h"
 
 
 int main(const int argc, char *argv[]) {
