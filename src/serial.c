@@ -67,7 +67,6 @@ int serial_read_line(char *buffer, int max_len) {
     }
 
     buffer[i] = '\0';
-    //if (i > 0) printf("Serial recibido: '%s'\n", buffer);
     return i;
 }
 
