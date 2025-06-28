@@ -58,6 +58,7 @@ static gboolean poll_serial(gpointer user_data) {
 
 //reload keymap
 static void on_reload_clicked(GtkButton *btn, gpointer user_data) {
+    gtk_label_set_text(status_label, "Iniciando recarga de keymaps... (Puede tardar un poco)");
     int result = keymap_reload_or_create_default("keymap.cfg");
     if (result == 0)
         gtk_label_set_text(status_label, "Mapeo cargado correctamente");
@@ -69,6 +70,7 @@ static void on_reload_clicked(GtkButton *btn, gpointer user_data) {
 
 // Crea una funcion para cerrar la app
 static void close_app(GtkWidget *widget, gpointer data) {
+    gtk_label_set_text(status_label, "Cerrando todos los procesos... (Puede tardar un poco)");
     serial_close();
     keysim_close();
     serial_close();
@@ -79,9 +81,13 @@ int gui_start(int argc, char *argv[], const char *serialPort) {
     gtk_init(&argc, &argv);
 
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    GtkWidget *image = gtk_image_new_from_file("resources/app_icon.png");
+    GdkPixbuf *icon = gtk_image_get_pixbuf(GTK_IMAGE(image));
     gtk_window_set_title(GTK_WINDOW(window), "MoniAuxServer");
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 200);
     gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+    gtk_window_set_icon(GTK_WINDOW(window), icon);
+
 
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -90,7 +96,7 @@ int gui_start(int argc, char *argv[], const char *serialPort) {
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     status_label = GTK_LABEL(label);
 
-    GtkWidget *button = gtk_button_new_with_label("Enviar");
+    GtkWidget *button = gtk_button_new_with_label("Cerrar");
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
     GtkWidget *reload_button = gtk_button_new_with_label("Recargar mapeo");
     gtk_box_pack_start(GTK_BOX(vbox), reload_button, FALSE, FALSE, 0);
