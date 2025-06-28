@@ -1,13 +1,19 @@
-//#include <stdio.h>
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../include/gui.h"
 #include "serial.h"
 
 
 int main(const int argc, char *argv[]) {
+    //Verifica si se ejecuta como root /dev/uinput
+    if (geteuid() != 0) {
+        fprintf(stderr, "Este programa necesita ejecutarse como root.\n");
+        exit(1);
+    }
+
     char *port_name = SerialPortName;
     // detecta si se introduce "-p" seguido de un puerto serie
     if (argc > 1 && strcmp(argv[1], "-p") == 0 && argc > 2) {
