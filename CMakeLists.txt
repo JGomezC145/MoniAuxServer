@@ -18,6 +18,8 @@ add_definitions(${GTK3_CFLAGS_OTHER})
 add_executable(MoniAuxServer
         include/gui.h
         src/gui.c
+        include/serial.h
+        src/serial.c
         src/main.c
 )
 
