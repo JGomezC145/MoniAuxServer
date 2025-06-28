@@ -9,7 +9,7 @@ static gboolean poll_serial(gpointer user_data) {
     char buffer[128];
     int n = serial_read_line(buffer, sizeof(buffer));
     if (n > 0) {
-        printf("Recibido: '%s'\n", buffer);  // Para depurar en terminal
+        printf("Recibido: >>>%s<<<\n", buffer);  // Para depurar en terminal
 
         if (strncmp(buffer, "Btn", 3) == 0 || strncmp(buffer, "Encoder", 7) == 0) {
             gtk_label_set_text(status_label, buffer);  // Mostrar directamente el comando recibido
@@ -24,7 +24,7 @@ static void close_app(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
 }
 
-int gui_start(int argc, char *argv[]) {
+int gui_start(int argc, char *argv[], const char *serialPort) {
     gtk_init(&argc, &argv);
 
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -45,7 +45,7 @@ int gui_start(int argc, char *argv[]) {
     g_signal_connect(button, "clicked", G_CALLBACK(close_app), NULL);
     g_signal_connect(window, "destroy", G_CALLBACK(close_app), NULL);
 
-    if (serial_open("/dev/ttyACM0") != 0) {
+    if (serial_open(serialPort) != 0) {
         gtk_label_set_text(GTK_LABEL(label), "Error abriendo /dev/ttyACM0");
     } else {
         g_timeout_add(100, poll_serial, NULL);
