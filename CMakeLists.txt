@@ -7,6 +7,10 @@ set(CMAKE_C_STANDARD 11)
 # Añadir directorio de headers
 include_directories(include)
 
+# Añadir directorio de iconos
+file(GLOB ICONS "resources/*.png")
+
+
 # Buscar GTK
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
@@ -25,7 +29,8 @@ add_executable(MoniAuxServer
         src/main.c
         include/keymap.h
         src/keymap.c
-        resources/app_icon.png
+        resources/icon.png
+        include/icon.h
 )
 
 # Vincular GTK

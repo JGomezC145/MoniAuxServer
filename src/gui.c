@@ -2,7 +2,7 @@
 #include "serial.h"
 #include <gtk/gtk.h>
 #include <string.h>
-
+#include "icon.h"
 #include "keymap.h"
 #include "keysim.h"
 
@@ -81,12 +81,21 @@ int gui_start(int argc, char *argv[], const char *serialPort) {
     gtk_init(&argc, &argv);
 
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    GtkWidget *image = gtk_image_new_from_file("resources/app_icon.png");
-    GdkPixbuf *icon = gtk_image_get_pixbuf(GTK_IMAGE(image));
+
     gtk_window_set_title(GTK_WINDOW(window), "MoniAuxServer");
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 200);
+
+    GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+    gdk_pixbuf_loader_write(loader, icon_png, icon_png_len, NULL);
+    gdk_pixbuf_loader_close(loader, NULL);
+
+    GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+    if (pixbuf) {
+        gtk_window_set_icon(GTK_WINDOW(window), pixbuf);
+    } else {
+        printf("Error: no se pudo cargar el ícono embebido\n");
+    }
     gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-    gtk_window_set_icon(GTK_WINDOW(window), icon);
 
 
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
