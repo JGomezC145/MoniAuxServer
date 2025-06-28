@@ -6,6 +6,7 @@
 #define SERIAL_H
 
 #define SerialBaudRate B115200
+#define SerialPortName "/dev/ttyACM1"
 
 int serial_open(const char *port_name);
 int serial_read_line(char *buffer, int max_len);
