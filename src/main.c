@@ -1,16 +1,24 @@
 //#include <stdio.h>
 
 #include <stdio.h>
+#include <string.h>
 
 #include "../include/gui.h"
+#include "serial.h"
 
 
 int main(const int argc, char *argv[]) {
-    // imprime el count de argumentos y los mismos:
-    printf("Cantidad de argumentos: %d\n", argc);
-    for (int i = 0; i < argc; i++) {
-        printf("Argumento %d: %s\n", i, argv[i]);
+    char *port_name = SerialPortName;
+    // detecta si se introduce "-p" seguido de un puerto serie
+    if (argc > 1 && strcmp(argv[1], "-p") == 0 && argc > 2) {
+        // Si se especifica un puerto, lo imprimimos
+        printf("Puerto serie especificado: %s\n", argv[2]);
+        port_name = argv[2];
+    } else {
+        // Si no se especifica, usamos el puerto por defecto
+        printf("Usando puerto serie por defecto: /dev/ttyACM1\n");
+        port_name = SerialPortName;
     }
 
-    return gui_start(argc, argv);
+    return gui_start(argc, argv, port_name);
 }
