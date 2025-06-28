@@ -23,6 +23,8 @@ add_executable(MoniAuxServer
         src/keysim.c
         include/keysim.h
         src/main.c
+        include/keymap.h
+        src/keymap.c
 )
 
 # Vincular GTK
