@@ -1,6 +1,3 @@
-//
-// Created by jgomez on 20/6/2025.
-//
 
 #ifndef GUI_H
 #define GUI_H
