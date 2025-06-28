@@ -20,6 +20,8 @@ add_executable(MoniAuxServer
         src/gui.c
         include/serial.h
         src/serial.c
+        src/keysim.c
+        include/keysim.h
         src/main.c
 )
 
