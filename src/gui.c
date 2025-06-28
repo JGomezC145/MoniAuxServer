@@ -2,7 +2,8 @@
 #include "serial.h"
 #include <gtk/gtk.h>
 #include <string.h>
-#include <linux/input-event-codes.h>
+
+#include "keymap.h"
 #include "keysim.h"
 
 static GtkLabel *status_label;
@@ -14,35 +15,57 @@ static gboolean poll_serial(gpointer user_data) {
     char *p = strchr(buffer, '\r');
     if (p) *p = '\0';
 
-
-
-    if (n > 0) {
-        //printf("Recibido: >>>%s<<<\n", buffer);  // Para depurar en terminal
-
-        if (strncmp(buffer, "Btn", 3) == 0 || strncmp(buffer, "Encoder", 7) == 0) {
-            gtk_label_set_text(status_label, buffer);
-        }
-
-        if (strcmp(buffer, "Btn1") == 0) {
-            gtk_label_set_text(status_label, "Botón 1");
-            keysim_send(KEY_B);
-        } else if (strcmp(buffer, "Btn2") == 0) {
-            gtk_label_set_text(status_label, "Botón 2");
-            keysim_send(KEY_ENTER);
-        } else if (strcmp(buffer, "EncoderL") == 0) {
-            gtk_label_set_text(status_label, "Encoder izquierda");
-            keysim_send(KEY_VOLUMEDOWN);
-        } else if (strcmp(buffer, "EncoderR") == 0) {
-            gtk_label_set_text(status_label, "Encoder derecha");
-            keysim_send(KEY_VOLUMEUP);
-        } else if (strcmp(buffer, "EncoderSW") == 0) {
-            gtk_label_set_text(status_label, "Encoder presionado");
-            keysim_send(KEY_PLAYPAUSE);
-        }
-
+    int keycode = keymap_lookup(buffer);
+    if (keycode != -1) {
+        gtk_label_set_text(status_label, buffer);
+        keysim_send(keycode);
+    } else {
+        gtk_label_set_text(status_label, "Comando no mapeado");
     }
+
+
+
+    /* if (n > 0) {
+    //     //printf("Recibido: >>>%s<<<\n", buffer);  // Para depurar en terminal
+    //
+    //     if (strncmp(buffer, "Btn", 3) == 0 || strncmp(buffer, "Encoder", 7) == 0) {
+    //         gtk_label_set_text(status_label, buffer);
+    //     }
+    //
+    //     if (strcmp(buffer, "Btn1") == 0) {
+    //         gtk_label_set_text(status_label, "Botón 1");
+    //         keysim_send(KEY_B);
+    //     } else if (strcmp(buffer, "Btn2") == 0) {
+    //         gtk_label_set_text(status_label, "Botón 2");
+    //         keysim_send(KEY_ENTER);
+    //     } else if (strcmp(buffer, "Btn6") == 0) {
+    //         gtk_label_set_text(status_label, "Botón 2");
+    //         keysim_send(KEY_F5);
+    //     } else if (strcmp(buffer, "EncoderL") == 0) {
+    //         gtk_label_set_text(status_label, "Encoder izquierda");
+    //         keysim_send(KEY_VOLUMEDOWN);
+    //     } else if (strcmp(buffer, "EncoderR") == 0) {
+    //         gtk_label_set_text(status_label, "Encoder derecha");
+    //         keysim_send(KEY_VOLUMEUP);
+    //     } else if (strcmp(buffer, "EncoderSW") == 0) {
+    //         gtk_label_set_text(status_label, "Encoder presionado");
+    //         keysim_send(KEY_PLAYPAUSE);
+    //     }
+    //
+     }*/
     return TRUE;
 }
+
+//reload keymap
+static void on_reload_clicked(GtkButton *btn, gpointer user_data) {
+    int result = keymap_reload_or_create_default("keymap.cfg");
+    if (result == 0)
+        gtk_label_set_text(status_label, "Mapeo cargado correctamente");
+    else
+        gtk_label_set_text(status_label, "Error cargando keymap.cfg");
+
+}
+
 
 // Crea una funcion para cerrar la app
 static void close_app(GtkWidget *widget, gpointer data) {
@@ -69,9 +92,28 @@ int gui_start(int argc, char *argv[], const char *serialPort) {
 
     GtkWidget *button = gtk_button_new_with_label("Enviar");
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+    GtkWidget *reload_button = gtk_button_new_with_label("Recargar mapeo");
+    gtk_box_pack_start(GTK_BOX(vbox), reload_button, FALSE, FALSE, 0);
 
+
+    g_signal_connect(reload_button, "clicked", G_CALLBACK(on_reload_clicked), NULL);
     g_signal_connect(button, "clicked", G_CALLBACK(close_app), NULL);
     g_signal_connect(window, "destroy", G_CALLBACK(close_app), NULL);
+
+    gtk_widget_show_all(window);
+
+    {
+        int result = keymap_reload_or_create_default("keymap.cfg");
+        if (result == 0)
+            gtk_label_set_text(status_label, "Mapeo cargado correctamente");
+        else
+            gtk_label_set_text(status_label, "Error cargando keymap.cfg");
+
+    }
+
+    if (keymap_load("keymap.cfg") != 0) {
+        gtk_label_set_text(status_label, "No se pudo cargar keymap.cfg");
+    }
 
     if (serial_open(serialPort) != 0) {
         gtk_label_set_text(GTK_LABEL(label), "Error abriendo /dev/ttyACM0");
@@ -83,7 +125,7 @@ int gui_start(int argc, char *argv[], const char *serialPort) {
         gtk_label_set_text(status_label, "Error con uinput");
     }
 
-    gtk_widget_show_all(window);
+
     gtk_main();
 
     serial_close();
