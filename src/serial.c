@@ -67,11 +67,12 @@ int serial_read_line(char *buffer, int max_len) {
     }
 
     buffer[i] = '\0';
-    if (i > 0) printf("Serial recibido: '%s'\n", buffer);
+    //if (i > 0) printf("Serial recibido: '%s'\n", buffer);
     return i;
 }
 
 void serial_close() {
+    printf("Closing serial port\n");
     if (serial_fd >= 0) {
         close(serial_fd);
         serial_fd = -1;
