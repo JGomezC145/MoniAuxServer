@@ -9,12 +9,19 @@ static gboolean poll_serial(gpointer user_data) {
     char buffer[128];
     int n = serial_read_line(buffer, sizeof(buffer));
     if (n > 0) {
-        if (strcmp(buffer, "Btn1") == 0) {
-            gtk_label_set_text(status_label, "Botón físico presionado");
-            printf("Catched! %s\n", buffer);
+        printf("Recibido: '%s'\n", buffer);  // Para depurar en terminal
+
+        if (strncmp(buffer, "Btn", 3) == 0 || strncmp(buffer, "Encoder", 7) == 0) {
+            gtk_label_set_text(status_label, buffer);  // Mostrar directamente el comando recibido
         }
     }
     return TRUE;
+}
+
+// Crea una funcion para cerrar la app
+static void close_app(GtkWidget *widget, gpointer data) {
+    serial_close();
+    gtk_main_quit();
 }
 
 int gui_start(int argc, char *argv[]) {
@@ -35,8 +42,8 @@ int gui_start(int argc, char *argv[]) {
     GtkWidget *button = gtk_button_new_with_label("Enviar");
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
 
-    g_signal_connect(button, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(button, "clicked", G_CALLBACK(close_app), NULL);
+    g_signal_connect(window, "destroy", G_CALLBACK(close_app), NULL);
 
     if (serial_open("/dev/ttyACM0") != 0) {
         gtk_label_set_text(GTK_LABEL(label), "Error abriendo /dev/ttyACM0");
