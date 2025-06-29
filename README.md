@@ -46,7 +46,7 @@ cmake --build build
 
 El ejecutable aparecerá en `build/MoniAuxServer`.
 
----
+
 
 ## Ejecución
 
@@ -58,7 +58,7 @@ sudo ./MoniAuxServer [-p /dev/ttyACM0]
 
 Si no se especifica `-p`, usará el puerto por defecto `/dev/ttyACM1`.
 
----
+
 
 ## Funcionalidad
 
@@ -71,7 +71,7 @@ Si no se especifica `-p`, usará el puerto por defecto `/dev/ttyACM1`.
     * Botón para recargar configuración
 * **Ícono embebido en el binario** (no se requieren archivos externos)
 
----
+
 
 ## Archivo de configuración: `keymap.cfg`
 
@@ -106,7 +106,7 @@ Puedes cambiar los valores por cualquier nombre de tecla compatible con `input-e
 
 Véase el documento [KeyTable LookUp](KeyTableLookUp.md)
 
-## 🔒 Permisos
+## Permisos
 
 Para poder acceder a `/dev/uinput`, necesitas:
 
