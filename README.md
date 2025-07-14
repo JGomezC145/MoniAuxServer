@@ -2,6 +2,9 @@
 
 **MoniAuxServer** es una aplicación en C con GUI para Linux (GTK), que recibe comandos desde un microcontrolador por puerto serial (este caso para el dispositivo [MoniAux](https://github.com/JGomezC145/MoniAux)) y simula teclas del teclado del sistema usando `uinput`. 
 
+> [!IMPORTANT]
+> Este proyecto y su distribución a Ubuntu, no será mantenido en el futuro. En su lugar, se seguirá actualizando el ServerMonitor para Windows. 
+
 ### Sobre [MoniAux](https://github.com/JGomezC145/MoniAux) (Dispositivo HID)
 <!-- ![MoniAux](https://raw.githubusercontent.com/JGomezC145/MoniAux/main/resources/MoniAux.png) -->
 
